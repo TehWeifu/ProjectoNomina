@@ -1,0 +1,19 @@
+#res {
+    display: none;
+}
+
+#brutoRes,
+#cincoTresRes,
+#cuotaSsTotal {
+    font-weight: bolder;
+    border-bottom: 3px solid cornflowerblue;
+}
+
+#seisDosRes {
+    font-weight: bolder;
+    border: 3px solid cornflowerblue;
+}
+
+.resultado {
+    color: cornflowerblue;
+}
