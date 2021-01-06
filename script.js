@@ -8,6 +8,7 @@ document.getElementById('calcular').onclick = () => {
 
     let salarioEspecie = parseFloat(document.getElementById("salarioEspecie").value) || 0;
 
+    let grupoProf = parseInt(document.getElementById("grupoProf").value) || 1;
     let contratoIndef = document.getElementById("contratoIndef").checked == true;
 
     let salarial1 = parseFloat(document.getElementById("salarialUno").value) || 0;
@@ -33,7 +34,7 @@ document.getElementById('calcular').onclick = () => {
         }
         else {
             dietasJustiFinal += dietasDias * 53.34;
-        }        
+        }
     }
     else {
         if (dietasExtranjero) {
@@ -60,13 +61,27 @@ document.getElementById('calcular').onclick = () => {
 
     let irpfPorcentaje = parseFloat(document.getElementById("irpfPorcen").value) || 0;
 
-    
-    let salarioBruto = salarioBase + salarioEspecie + salarial1 + salarial2 + salarial3 + locoTotal + dietasTotal + otrosTotal + (numeroHorasNormales * valorHorasNormales + numeroHorasFuerza * valorHorasFuerza) + (recibePagaExtra || (document.getElementById("pagaPro").checked == true) ? importePaga : 0);
-    
-    let bccc = salarioBase + salarioEspecie + salarial1 + salarial2 + salarial3 + locoNOJustiFinal + dietasNOJustiFinal + otrosNOJusti + ppe;
-    let bccp = bccc + (valorHorasNormales * numeroHorasNormales + valorHorasFuerza * numeroHorasFuerza);
-    let bche = valorHorasNormales * numeroHorasNormales + valorHorasFuerza * numeroHorasFuerza;
 
+    let salarioBruto = salarioBase + salarioEspecie + salarial1 + salarial2 + salarial3 + locoTotal + dietasTotal + otrosTotal + (numeroHorasNormales * valorHorasNormales + numeroHorasFuerza * valorHorasFuerza) + (recibePagaExtra || (document.getElementById("pagaPro").checked == true) ? importePaga : 0);
+
+    let bccc = salarioBase + salarioEspecie + salarial1 + salarial2 + salarial3 + locoNOJustiFinal + dietasNOJustiFinal + otrosNOJusti + ppe;
+    let bcccReal = checkGroup(bccc, grupoProf);
+    let bccp = bccc + (valorHorasNormales * numeroHorasNormales + valorHorasFuerza * numeroHorasFuerza);
+    let bccpReal = checkGroup(bccp, 7);
+    let bche = valorHorasNormales * numeroHorasNormales + valorHorasFuerza * numeroHorasFuerza;    
+    
+    document.getElementById("primerRes").innerHTML = "(" + numeroPagaExtra + " x " + valorPagaExtra.toFixed(2) + ") / 12 = " + (numeroPagaExtra * valorPagaExtra / 12).toFixed(2) + " €";
+    
+    document.getElementById("segundoRes").innerHTML = salarioBase.toFixed(2) + " + " + salarioEspecie.toFixed(2) + " + (" + (salarial1 + salarial2 + salarial3).toFixed(2) + ") + (" + (locoTotal + dietasTotal + otrosTotal).toFixed(2) + ") + " + (numeroHorasNormales * valorHorasNormales + numeroHorasFuerza * valorHorasFuerza).toFixed(2) + " + " + (recibePagaExtra || (document.getElementById("pagaPro").checked == true) ? importePaga.toFixed(2) : 0.00) + " = ";
+    document.getElementById("brutoRes").innerHTML = salarioBruto.toFixed(2) + " €";
+    
+    document.getElementById("tresUnoRes").innerHTML = salarioBase.toFixed(2) + " + " + salarioEspecie.toFixed(2) + " + (" + (salarial1 + salarial2 + salarial3).toFixed(2) + ") + (" + (dietasNOJustiFinal + locoNOJustiFinal + otrosNOJusti).toFixed(2) + ") + " + ppe.toFixed(2) + " = " + bccc.toFixed(2) + " €" + (bccc != bcccReal ? (" X " + bcccReal.toFixed(2) + " €") : " ✓");
+    document.getElementById("tresDosRes").innerHTML = bccc.toFixed(2) + " + " + (valorHorasNormales * numeroHorasNormales + valorHorasFuerza * numeroHorasFuerza).toFixed(2) + " = " + bccp.toFixed(2) + " €" + (bccp != bccpReal ? (" X " + bccpReal.toFixed(2) + " €") : " ✓");
+    document.getElementById("tresTresRes").innerHTML = (valorHorasNormales * numeroHorasNormales).toFixed(2) + " + " + (valorHorasFuerza * numeroHorasFuerza).toFixed(2) + " = " + bche.toFixed(2) + " €";
+    
+    bccc = bcccReal;
+    bccp = bccpReal;
+    
     let cuotaCC = bccc * 4.7 / 100;
     let cuotaDes = bccp * (contratoIndef ? 1.55 : 1.6) / 100;
     let cuotaFp = bccp * 0.1 / 100;
@@ -76,23 +91,13 @@ document.getElementById('calcular').onclick = () => {
 
     let baseIrpf = salarioBruto - (dietasJustiFinal + locoJustiFinal + otrosJusti);
     let cuotaIRPF = baseIrpf * irpfPorcentaje / 100;
-
-    let salarioNeto = salarioBruto - cuotaSsTotal - cuotaIRPF;
-
-
-    document.getElementById("primerRes").innerHTML = "(" + numeroPagaExtra + " x " + valorPagaExtra + ") / 12 = " + (numeroPagaExtra * valorPagaExtra / 12).toFixed(2) + " €";  
     
-    document.getElementById("segundoRes").innerHTML = salarioBase + " + " + salarioEspecie + " + (" + (salarial1 + salarial2 + salarial3) + ") + (" + (locoTotal + dietasTotal + otrosTotal) + ") + " + (numeroHorasNormales * valorHorasNormales + numeroHorasFuerza * valorHorasFuerza) + " + " + (recibePagaExtra || (document.getElementById("pagaPro").checked == true) ? importePaga.toFixed(2) : 0) + " = ";
-    document.getElementById("brutoRes").innerHTML = salarioBruto.toFixed(2) + " €";
-
-    document.getElementById("tresUnoRes").innerHTML = salarioBase + " + " + salarioEspecie + " + (" + (salarial1 + salarial2 + salarial3) + ") + (" + (dietasNOJustiFinal + locoNOJustiFinal + otrosNOJusti) + ") + " + ppe.toFixed(2) + " = " + bccc.toFixed(2) + " €";
-    document.getElementById("tresDosRes").innerHTML = bccc.toFixed(2) + " + " + (valorHorasNormales * numeroHorasNormales + valorHorasFuerza * numeroHorasFuerza) + " = " + bccp.toFixed(2) + " €";
-    document.getElementById("tresTresRes").innerHTML = (valorHorasNormales * numeroHorasNormales) + " + " + (valorHorasFuerza * numeroHorasFuerza) + " = " + bche.toFixed(2) + " €";
+    let salarioNeto = salarioBruto - cuotaSsTotal - cuotaIRPF;    
 
     document.getElementById("baseCC").innerHTML = bccc.toFixed(2) + " €";
     document.getElementById("cuotaCC").innerHTML = cuotaCC.toFixed(2) + " €";
     document.getElementById("baseDes").innerHTML = bccp.toFixed(2) + " €";
-    document.getElementById("tipoDes").innerHTML = (contratoIndef ? 1.55 : 1.6);
+    document.getElementById("tipoDes").innerHTML = (contratoIndef ? "1.55%" : "1.6%");
     document.getElementById("cuotaDes").innerHTML = cuotaDes.toFixed(2) + " €";
     document.getElementById("baseFP").innerHTML = bccp.toFixed(2) + " €";
     document.getElementById("cuotaFP").innerHTML = cuotaFp.toFixed(2) + " €";
@@ -102,14 +107,45 @@ document.getElementById('calcular').onclick = () => {
     document.getElementById("cuotaHEfm").innerHTML = cuotaHefm.toFixed(2) + " €";
     document.getElementById("cuotaSsTotal").innerHTML = cuotaSsTotal.toFixed(2) + " €";
 
-    document.getElementById("cincoUnoRes").innerHTML = salarioBruto + " - (" + dietasJustiFinal + " + " + locoJustiFinal + " + " + otrosJusti + ") = " + baseIrpf.toFixed(2) + " €";
-    document.getElementById("cincoDosRes").innerHTML = baseIrpf + " x " + irpfPorcentaje + "% = ";
+    document.getElementById("cincoUnoRes").innerHTML = salarioBruto.toFixed(2) + " - (" + dietasJustiFinal + " + " + locoJustiFinal + " + " + otrosJusti + ") = " + baseIrpf.toFixed(2) + " €";
+    document.getElementById("cincoDosRes").innerHTML = baseIrpf.toFixed(2) + " x " + irpfPorcentaje + "% = ";
     document.getElementById("cincoTresRes").innerHTML = cuotaIRPF.toFixed(2) + " €";
 
-    document.getElementById("seisUnoRes").innerHTML = salarioBruto + " - " + cuotaSsTotal.toFixed(2) + " - " + cuotaIRPF.toFixed(2) + " = ";
+    document.getElementById("seisUnoRes").innerHTML = salarioBruto.toFixed(2) + " - " + cuotaSsTotal.toFixed(2) + " - " + cuotaIRPF.toFixed(2) + " = ";
     document.getElementById("seisDosRes").innerHTML = salarioNeto.toFixed(2) + " €";
-
 
     document.getElementById("res").style.display = "block";
     return false;
+}
+
+function checkGroup(base, grupo) {
+    if (base > 4070.10) return 4070.10;
+    switch (grupo) {
+        case 1:
+            if (base < 1547) {
+                return 1547;
+            }
+            return base;
+
+        case 2:
+            if (base < 1282.80) {
+                return 1282.80;
+            }
+            return base;
+        case 3:
+            if (base < 1116) {
+                return 1116;
+            }
+            return base;
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+            if (base < 1108.33) {
+                return 1108.33;
+            }
+            return base;
+        default:
+            break;
+    }
 }
